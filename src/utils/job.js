@@ -9,7 +9,7 @@ const setupJobs = () => {
     const response = await repo.fetchPendingEmails();
     response.forEach((email) => {
       sender.sendMail({
-        from: 'ReminderService',
+        from: '"ReminderService"<krrishkumar218@gmail.com>',
         to: email.recipientEmail,
         subject: email.subject,
         text: email.content,

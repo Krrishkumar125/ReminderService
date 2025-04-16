@@ -6,7 +6,7 @@ class EmailService {
     this.ticketRepository = new TicketRepository();
   }
 
-  async sendBasicEmail(mailFrom, mailTo, mailSubject, mailBody) {
+  async sendBasicEmail({mailFrom, mailTo, mailSubject, mailBody}) {
     try {
       const response = await sender.sendMail({
         from: mailFrom,
@@ -20,7 +20,7 @@ class EmailService {
     }
   }
 
-  async fetchPendingEmails(timestamp) {
+  async fetchPendingEmails() {
     try {
       const response = await this.ticketRepository.get({status:"PENDING"});
       return response;
@@ -46,6 +46,22 @@ class EmailService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async subscribeEvents(payload){
+      let service = payload.service;
+      let data = payload.data;
+      switch(service){
+        case 'CREATE_TICKET':
+          await this.createNotification(data);
+          break;
+        case 'SEND_BASIC_MAIL' :
+          await this.sendBasicEmail(data);  
+          break;
+        default:
+          console.log('No valid event recieved');
+          break;  
+      }
   }
 }
 

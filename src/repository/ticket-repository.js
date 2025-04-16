@@ -45,7 +45,7 @@ class TicketRepository{
                 ticket.status = data.status;
             }
             await ticket.save();
-            return ticket;
+            return ticket; 
         } catch (error) {
             console.log(error);
         }

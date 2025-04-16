@@ -5,9 +5,12 @@ const app = express();
 
 const {PORT} = require('./config/serverConfig');
 const apiRoutes = require('./routes/index');
-
-// const {sendBasicEmail} = require('./services/email-service')
 const setupJobs = require('./utils/job');
+const {createChannel , subscribeMessage} = require('./utils/messageQueue');
+const { REMINDER_BINDING_KEY } = require('./config/serverConfig');
+const EmailService = require('./services/email-service')
+
+const emailService = new EmailService();
 
 const setupAndStartServer = async () =>{
     app.use(bodyParser.json());
@@ -15,19 +18,13 @@ const setupAndStartServer = async () =>{
 
     app.use('/api', apiRoutes);
 
+    const channel = await createChannel();
+    subscribeMessage(channel , emailService.subscribeEvents.bind(emailService) , REMINDER_BINDING_KEY);
+
     app.listen(PORT , ()=>{
         console.log(`server is running at ${PORT}`);
-
-        // sendBasicEmail(
-        //     "'Airline Support' <krrishkumar218@gmail.com>" ,
-        //     'krrishkumar000125@gmail.com',
-        //     'This is a testing email',
-        //     'Hey , how are you , I hope you like the support'
-        // )
-
-       setupJobs();
+        // setupJobs();
     });
-
 }
 
 setupAndStartServer();
